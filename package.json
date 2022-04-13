@@ -9,6 +9,8 @@
   "author": "Allen Mikhailov",
   "license": "ISC",
   "dependencies": {
-    "discord": "^0.8.2"
+    "discord": "^0.8.2",
+    "discord.js": "^13.6.0",
+    "dotenv": "^16.0.0"
   }
 }
