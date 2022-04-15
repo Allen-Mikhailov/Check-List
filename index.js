@@ -7,13 +7,15 @@ const token = process.env.CLIENT_TOKEN
 const clientId = process.env.CLIENT_ID
 const guildId = process.env.GUILD_ID
 const { Client, Intents } = require("discord.js")
+const interactions = require("./interactionHandler.js")
 
-const commands = [
-	new SlashCommandBuilder().setName('ping').setDescription('Replies with pong!'),
-	new SlashCommandBuilder().setName('server').setDescription('Replies with server info!'),
-	new SlashCommandBuilder().setName('user').setDescription('Replies with user info!'),
-]
-	.map(command => command.toJSON());
+const commands = []
+for (cmdname in interactions)
+{
+    commands.push(interactions[cmdname].create())
+}
+
+commands.map(command => command.toJSON());
 
 const rest = new REST({ version: '9' }).setToken(token);
 
@@ -32,14 +34,9 @@ client.on('interactionCreate', async interaction => {
 
 	const { commandName } = interaction;
 
-	if (commandName === 'ping') {
-		await interaction.reply('Pong!');
-	} else if (commandName === 'beep') {
-		await interaction.reply('Boop!');
-	}
+	interactions[commandName].call(interaction)
 });
 
-console.log(token)
 client.login(token);
 
 var rl = require("readline").createInterface({
