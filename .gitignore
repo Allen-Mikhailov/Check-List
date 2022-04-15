@@ -1,3 +1,10 @@
+# node stuff
 node_modules/
+
+# data
+state.json
 lists/
+
+# config file
 .env
+

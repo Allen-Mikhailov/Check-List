@@ -1,12 +1,13 @@
 const fs = require("fs")
 
+// Checking for valid files/folders in dir
+if (!fs.existsSync("./lists"))
+{
+    fs.mkdirSync("./lists")
+}
+
 // Setting up checklists
 const { SlashCommandBuilder } = require('@discordjs/builders');
-
-function profilecheck(user)
-{
-    
-}
 
 const commands = {
     create: {
@@ -41,8 +42,8 @@ const commands = {
                 .setName("add")
                 .setDescription("adds an item to a check list")
                 .addStringOption(option =>
-                    option.setName('name')
-                    .setDescription('The name of the list that will be created')
+                    option.setName('item')
+                    .setDescription('The item that will be added to the list')
                     .setRequired(true));
         }
     }
