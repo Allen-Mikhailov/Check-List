@@ -9,10 +9,27 @@ if (!fs.existsSync("./state.json"))
          
     }))
 
-const state = JSON.parse(fs.readFileSync("./state.json"))
+var state = JSON.parse(fs.readFileSync("./state.json"))
 
 // Setting up checklists
 const { SlashCommandBuilder } = require('@discordjs/builders');
+
+function updateState()
+{
+    fs.writeFileSync("./state.json", JSON.stringify(state))
+}
+
+//List item = {String name, boolean completed}
+const completedtable = {[true]: ":white_check_mark:", [false]: ":x:"}
+function displayList(list)
+{
+    var str = ""
+    for (var i = 0; i < list.length; i++)
+    {
+        str += "\t" + list[i].name + ": " + completedtable[list[i].completed] + "\n"
+    }
+    return str
+}
 
 const commands = {
     help: {
@@ -43,7 +60,7 @@ const commands = {
             } else {
                 const newlist = JSON.stringify({
                     metadata: {},
-                    items: {}
+                    items: []
                 })
                 fs.writeFileSync("./lists/"+path+".json", newlist)
                 interaction.reply("List successfuly created")
@@ -62,11 +79,15 @@ const commands = {
                     .setRequired(true));
         },
         call: (interaction) => {
-            const item = interaction.item.getString("item")
+            const item = interaction.options.getString("item")
             if (!state.open)
             {
-                interaction.reply("No openned check list \n use /open to open one")
+                interaction.reply("No opened check list \n use /open to open one")
             } else {
+                const list = JSON.parse(fs.readFileSync("./lists/"+state.open+".json"))
+                console.log(list)
+                list.items.push({"name": item, "completed": false})
+                fs.writeFileSync("./lists/"+state.open+".json", JSON.stringify(list))
                 interaction.reply("Successfully added an item to "+state.open)
             }
         }
@@ -86,6 +107,11 @@ const commands = {
             if (fs.existsSync("./lists/"+listname+".json"))
             {
                 const list = JSON.parse(fs.readFileSync("./lists/"+listname+".json"))
+                var display = listname+": \n"
+                display += displayList(list.items)
+                interaction.reply(display)
+
+                state.open = listname
             }
         }
     }
